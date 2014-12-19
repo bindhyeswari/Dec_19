@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script>
+
+        var searchTerm = 'nodejs';
+
+        var gh_search_repo_model = {
+            url: 'https://api.github.com/search/repositories',
+            results: {},
+            updateView: function () {
+                // responsible for updating the view
+            },
+            update: function (prop, data) {
+                // responsible for updating the data inside the model
+                this.updateView();
+            }
+        };
+
+        function makeAjax(searchTerm, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'https://api.github.com/search/repositories?q=' + searchTerm);
+            xhr.setRequestHeader('accept', 'application/json');
+            xhr.addEventListener('readystatechange', function () {
+                if( xhr.readyState === 4 && xhr.status === 200 ) {
+                    var obj = JSON.parse(xhr.responseText);
+                    console.log(obj);
+                    callback(obj);
+                }
+            });
+            xhr.send();
+        }
+
+        function populateData(data, element) {
+            element.innerHTML = JSON.stringify(data);
+        }
+
+        function gitHubController() {
+            // initiating the ajax call
+            // updating the model
+
+            makeAjax();
+            gh_search_repo_model.update('results', data); // data = response from github
+        }
+
+        function updateModel() {
+
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('inp_search').addEventListener('change', function () {
+                var searchTerm = this.value;
+                makeAjax(searchTerm, function (data) {
+                    populateData(data, document.getElementById('results'))
+                })
+            });
+        });
+
+
+    </script>
+</head>
+<body>
+    <input type="text" id="inp_search"/>
+    <div id="results">
+
+    </div>
+</body>
+</html>
